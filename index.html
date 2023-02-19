@@ -11,6 +11,11 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nunito" />
 </head>
 <body>
+    <section class="py-5">
+        <div class="container text-center text-danger">
+            <h1 id="gameOver"></h1>
+        </div>
+    </section>
     <section id="rules" class="py-5">
         <div class="container">
             <div class="d-flex justify-content-around align-items-center">
@@ -38,7 +43,7 @@
                     </ul>
                 </div>
                 <div>
-                    <button onclick="readRules()" class="btn btn-primary btn-lg">
+                    <button onclick="gameStart()" class="btn btn-primary btn-lg">
                         START
                     </button>
                 </div>
@@ -54,7 +59,6 @@
                         0
                     </span>
                 </h1>
-                <br>
                 <h1>
                     Toto je skóre bota:
                     <span id="computer-score-board">
