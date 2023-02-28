@@ -6,6 +6,10 @@ let computerScoreBoard = document.getElementById('computer-score-board');
 
 let playerScoreBoard = document.getElementById('player-score-board');
 
+let chooseLetter;
+
+let botPC;
+
 let history = document.getElementById('history');
 history = [];
 
@@ -26,39 +30,46 @@ let onBoardingDone = false;
 
 
 function playerWin() {
-    count.kamen++;
-    count.noznice++;
     playerScore++;
-    
-    history+=("Vyhral si");
-
-    playerScoreBoard.innerHTML = playerScore;
+    history+=("Vyhra");
+    if(chooseLetter == pick.stone && botPC == pick.scissors) {
+        count.kamen++;
+        count.noznice++;
+    } else if(chooseLetter == pick.paper && botPC == pick.stone) {
+        count.papier++;
+        count.kamen++;
+    } else if(chooseLetter == pick.scissors && botPC == pick.paper) {
+        count.noznice++;
+        count.papier++;
+    }
 }
 
 function playerLose() {
-
-    count.kamen++;
-    count.papier++;
     computerScore++;
+    history+=("Prehra");
+    if(chooseLetter == pick.stone && botPC == pick.paper) {
+        count.kamen++;
+        count.papier++;
+    } else if(chooseLetter == pick.paper && botPC == pick.scissors) {
+        count.papier++;
+        count.noznice++;
+    } else if(chooseLetter == pick.scissors && botPC == pick.stone) {
+        count.noznice++;
+        count.kamen++;
+    }
     
-    history+=("Prehral si");
-
-    computerScoreBoard.innerHTML = computerScore;
 }
 
 function draw() {
-    alert("Remiza")
-
-    if(botPC == 'K') {
-        count.kamen+2;
-    } else if(botPC == 'P') {
-        count.papier+2;
-    } else {
-        count.noznice+2;
+        history+=("Remiza");
+        if(chooseLetter == pick.stone && botPC == pick.stone) {
+            count.kamen = count.kamen + 2;
+        } else if(chooseLetter == pick.paper && botPC == pick.paper) {
+            count.papier = count.papier + 2;
+        } else if(chooseLetter == pick.scissors && botPC == pick.scissors) {
+            count.scissors = count.noznice + 2;
+        }
     }
-
-    history+=("Remiza");
-}
 
 
 
@@ -86,7 +97,7 @@ function start() {
 
 
 function generateLetter() {
-    const letters = 'KPN';
+    const letters = 'kpn';
     return letters[Math.floor(Math.random() * letters.length)]
 }
 
@@ -100,60 +111,29 @@ function actualGameStart() {
 
 
 function chooseLetterPromt() {
-    let chooseLetter = prompt("Vyber si medzi pismenami K, P alebo N")
-    if(chooseLetter.toLowerCase() !== "k" && chooseLetter.toLowerCase() !== "p"  && chooseLetter.toLowerCase() !== "n") {
+    chooseLetter = prompt("Vyber si medzi pismenami K, P alebo N")
+    if(chooseLetter.toLowerCase() !== pick.stone && chooseLetter.toLowerCase() !== pick.paper  && chooseLetter.toLowerCase() !== pick.scissors) {
         alert("Musite si vybrať medzi písmenami K, P alebo N !!!")
 
         chooseLetterPromt();
     } else {
-      const botPC = generateLetter();
+      botPC = generateLetter();
+        console.log(botPC);
+        if(chooseLetter == botPC) {
+            draw();
+        } else if(chooseLetter == pick.stone && botPC == pick.scissors || chooseLetter == pick.paper && botPC == pick.stone || chooseLetter == pick.scissors && botPC == pick.paper) {
+            playerWin();
+        } else {
+            playerLose();
+        }
 
-      console.log("Toto vybral bot:", botPC);
-
-      alert("Toto vybral bot: " + botPC);
-
-      console.log("Toto si si ty vybral", chooseLetter)
-
-
-      if(pick.stone && botPC == 'P') {
-        alert("Prehral si")
-    
-        playerLose();
-    
-    }else if(pick.stone && botPC == 'N') {
-        alert("Vyhral si")
-    
-        playerWin();
-    
-    }else if(pick.paper && botPC == 'N') {
-        alert("Prehral si")
-    
-        playerLose();
-    
-    }else if(pick.paper && botPC == 'K') {
-        alert("Vyhral si")
-    
-        playerWin();
-    
-    }else if(pick.scissors && botPC == 'K') {
-        alert("Prehral si")
-    
-        playerLose();
-    
-    }else if(pick.scissors && botPC == 'P') {
-        alert("Vyhral si")
-    
-        playerWin();
-    
-    }else if(pick.stone && botPC == 'K') {
-        draw();
-    } else if(pick.paper && botPC == 'P') {
-        alert("Si kkt");
-    }
+        
     }
 
     console.log("Tolkoto kamenov: " + count.kamen + " Tolkoto papierov: " + count.papier + " Tolkoto noznic: " + count.noznice);
     history = document.getElementById('history').innerHTML = history + "<br/>";
+    computerScoreBoard = document.getElementById('computer-score-board').innerHTML = computerScore;
+    playerScoreBoard = document.getElementById('player-score-board').innerHTML = playerScore;
     fullGameWin();
 }
 
@@ -175,7 +155,7 @@ function fullGameWin() {
 
 function playAgain() {
     let playAgainPrompt = prompt("Chceš hrať odznova ?");
-    if (playAgainPrompt == "ano" || playAgainPrompt == "Ano") {
+    if (playAgainPrompt.toLowerCase() == "ano") {
 
         playerScore = 0;
         computerScore = 0;
