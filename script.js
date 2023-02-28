@@ -16,12 +16,12 @@ let count = {
 };
 
 let pick = {
-    stone: 'k' || 'K',
-    paper: 'p' || 'P',
-    scissors: 'n' || 'N',
+    stone: 'k',
+    paper: 'p',
+    scissors: 'n',
 };
 
-let rulesCount = 0;
+let onBoardingDone = false;
 
 
 
@@ -47,32 +47,39 @@ function playerLose() {
 }
 
 function draw() {
-    count.noznice++;
-    count.noznice++;
-    
+    alert("Remiza")
+
+    if(botPC == 'K') {
+        count.kamen+2;
+    } else if(botPC == 'P') {
+        count.papier+2;
+    } else {
+        count.noznice+2;
+    }
+
     history+=("Remiza");
 }
 
 
 
 function gameStart() {
-    if(rulesCount >= 1) {
+    if(onBoardingDone == true) {
         return actualGameStart();
-    } readRules();
+    } start();
 }
 
 
 
-function readRules() {
-    let yesNo = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
-    if(yesNo == 'ano' || yesNo == "Ano") {
-        rulesCount++;
+function start() {
+    const str = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
+    if(str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() == "ano") {
+        onBoardingDone = true;
         return actualGameStart();
     } document.getElementById("rules").style.border = "3px solid red";
         setTimeout(() => {
             document.getElementById("rules").style.border = "none";
         }, 800);
-        rulesCount++;
+        onBoardingDone = true;
         
 }
 
@@ -94,18 +101,20 @@ function actualGameStart() {
 
 function chooseLetterPromt() {
     let chooseLetter = prompt("Vyber si medzi pismenami K, P alebo N")
-    if(chooseLetter !== "K" && chooseLetter!=="k" && chooseLetter !== "P" && chooseLetter !== "p" && chooseLetter !== "N" && chooseLetter !== "n") {
+    if(chooseLetter.toLowerCase() !== "k" && chooseLetter.toLowerCase() !== "p"  && chooseLetter.toLowerCase() !== "n") {
         alert("Musite si vybrať medzi písmenami K, P alebo N !!!")
 
         chooseLetterPromt();
     } else {
-      const botPC   = generateLetter();
+      const botPC = generateLetter();
 
       console.log("Toto vybral bot:", botPC);
 
       alert("Toto vybral bot: " + botPC);
 
       console.log("Toto si si ty vybral", chooseLetter)
+
+
       if(pick.stone && botPC == 'P') {
         alert("Prehral si")
     
@@ -115,11 +124,6 @@ function chooseLetterPromt() {
         alert("Vyhral si")
     
         playerWin();
-    
-    }else if(pick.stone && botPC == 'K') {
-        alert("Remiza")
-    
-        draw();
     
     }else if(pick.paper && botPC == 'N') {
         alert("Prehral si")
@@ -131,11 +135,6 @@ function chooseLetterPromt() {
     
         playerWin();
     
-    }else if(pick.paper && botPC == 'P') {
-        alert("Remiza")
-    
-        draw();
-    
     }else if(pick.scissors && botPC == 'K') {
         alert("Prehral si")
     
@@ -146,11 +145,10 @@ function chooseLetterPromt() {
     
         playerWin();
     
-    }else if(pick.scissors && botPC == 'N') {
-        alert("Remiza")
-    
+    }else if(pick.stone && botPC == 'K') {
         draw();
-    
+    } else if(pick.paper && botPC == 'P') {
+        alert("Si kkt");
     }
     }
 
@@ -186,7 +184,7 @@ function playAgain() {
         count.papier = 0;
         count.noznice = 0;
 
-        rulesCount = 0;
+        onBoardingDone = 0;
 
         document.getElementById('player-score-board').innerHTML = 0;
 
