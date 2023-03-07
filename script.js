@@ -73,13 +73,15 @@ function gameStart() {
 
 
 function wordAdjustment(cleanWord) {
-    cleanWord = cleanWord.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
     return cleanWord
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
 }
 
 function start() {
-    let cleanWord = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
-    if(wordAdjustment(cleanWord) == "ano") {
+    let dirtyWord = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
+    if(wordAdjustment(dirtyWord) == "ano") {
         onBoardingDone = true
         return actualGameStart()
     } 
@@ -154,14 +156,16 @@ function fullGameWin() {
         setTimeout(() => {
             playAgain()
         }, 3000)
-    } else { 
-        if(computerScore >= 5) {
-            gameOver = document.getElementById('gameOver').innerHTML = "Prehral si celu hru. Bot dosiahol " + computerScore + " bodov."
-        setTimeout(() => {
-            playAgain()
-        }, 1500)
-        }
+        return
     }
+
+    if(computerScore >= 5) {
+        gameOver = document.getElementById('gameOver').innerHTML = "Prehral si celu hru. Bot dosiahol " + computerScore + " bodov."
+    setTimeout(() => {
+        playAgain()
+    }, 1500)
+    }
+
 }
 
 
