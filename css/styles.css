@@ -1,0 +1,11 @@
+nav {
+    height: 80px;
+}
+
+ul {
+    padding-left: 12px !important;
+}
+
+li {
+    margin-left: 16px;
+}
