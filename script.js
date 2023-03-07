@@ -6,15 +6,18 @@ let playerScoreBoard = document.getElementById('player-score-board')
 
 let chooseLetter, botPC
 
-let cleanWord, dirtyWord
 
-let historyInHtml = document.getElementById('history')
-let historyArray = []
+let historyOfChooses = document.getElementById("choosenHistory")
+let historyArrayOfChooses = []
+
+let historyOfWins = document.getElementById('history')
+let historyArrayOfWins = []
+
 
 let count = {
-    kamen: 0,
-    papier: 0,
-    noznice: 0
+    k: 0,
+    p: 0,
+    n: 0
 }
 
 let pick = {
@@ -30,45 +33,27 @@ let onBoardingDone = false
 
 
 
-function playerWin() {
+function playerWin(choosedMe, choosedBot) {
+    historyArrayOfChooses.push("Toto vybral bot:   " + botPC  + "   Toto si vybral ty:    " + chooseLetter)
     playerScore++
-    historyArray.push("Vyhra")
-    if(chooseLetter == pick.stone && botPC == pick.scissors) {
-        count.kamen++
-        count.noznice++
-    } else if(chooseLetter == pick.paper && botPC == pick.stone) {
-        count.papier++
-        count.kamen++
-    } else if(chooseLetter == pick.scissors && botPC == pick.paper) {
-        count.noznice++
-        count.papier++
-    }
+    historyArrayOfWins.push("Vyhra")
+    count[choosedMe]++
+    count[choosedBot]++
+    
 }
 
-function playerLose() {
+function playerLose(choosedMe, choosedBot) {
+    historyArrayOfChooses.push("Toto vybral bot:   " + botPC +  "   Toto si vybral ty:    " + chooseLetter)
     computerScore++
-    historyArray.push("Prehra")
-    if(chooseLetter == pick.stone && botPC == pick.paper) {
-        count.kamen++
-        count.papier++
-    } else if(chooseLetter == pick.paper && botPC == pick.scissors) {
-        count.papier++
-        count.noznice++
-    } else if(chooseLetter == pick.scissors && botPC == pick.stone) {
-        count.noznice++
-        count.kamen++
-    }  
+    historyArrayOfWins.push("Prehra")
+    count[choosedMe]++
+    count[choosedBot]++
 }
 
-function draw() {
-        historyArray.push("Remiza")
-        if(chooseLetter == pick.stone && botPC == pick.stone) {
-            count.kamen = count.kamen + 2
-        } else if(chooseLetter == pick.paper && botPC == pick.paper) {
-            count.papier = count.papier + 2
-        } else if(chooseLetter == pick.scissors && botPC == pick.scissors) {
-            count.scissors = count.noznice + 2
-        }
+function draw(choosed) {
+        historyArrayOfChooses.push("Toto vybral bot:   " + botPC + "   Toto si vybral ty:    " + chooseLetter)
+        historyArrayOfWins.push("Remiza")
+        count[choosed] = count[choosed] + 2
     }
 
 
@@ -87,14 +72,14 @@ function gameStart() {
 
 
 
-function wordAdjustment() {
-    cleanWord = dirtyWord.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+function wordAdjustment(cleanWord) {
+    cleanWord = cleanWord.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    return cleanWord
 }
 
 function start() {
-    dirtyWord = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
-    wordAdjustment()
-    if(cleanWord == "ano") {
+    let cleanWord = prompt("Ste oboznámený s pravidlami ? (áno/nie)")
+    if(wordAdjustment(cleanWord) == "ano") {
         onBoardingDone = true
         return actualGameStart()
     } 
@@ -143,16 +128,16 @@ function chooseLetterPromt() {
     botPC = generateLetter()
     console.log(botPC)
     if(chooseLetter == botPC) {
-        draw()
+        draw(chooseLetter)
     } else if(chooseLetter == pick.stone && botPC == pick.scissors || chooseLetter == pick.paper && botPC == pick.stone || chooseLetter == pick.scissors && botPC == pick.paper) {
-        playerWin()
+        playerWin(chooseLetter, botPC)
     } else {
-        playerLose()
+        playerLose(chooseLetter, botPC)
     }
 
 
-    console.log("Tolkoto kamenov: " + count.kamen + " Tolkoto papierov: " + count.papier + " Tolkoto noznic: " + count.noznice)
-    historyInHtml.innerHTML = historyArray.join("<br>")
+    historyOfChooses.innerHTML = historyArrayOfChooses.join("<br>")
+    historyOfWins.innerHTML = historyArrayOfWins.join("<br>")
     computerScoreBoard = document.getElementById('computer-score-board').innerHTML = computerScore
     playerScoreBoard = document.getElementById('player-score-board').innerHTML = playerScore
     fullGameWin()
@@ -164,16 +149,18 @@ function chooseLetterPromt() {
 
 
 function fullGameWin() {
-    if(playerScore == 5) {
+    if(playerScore >= 5) {
         gameOver = document.getElementById('gameOver').innerHTML = "Vyhral si celu hru. Dosiahol si " + playerScore + " bodov."
         setTimeout(() => {
             playAgain()
         }, 3000)
-    } else if(computerScore == 5) { 
-        gameOver = document.getElementById('gameOver').innerHTML = "Prehral si celu hru. Bot dosiahol " + computerScore + " bodov."
+    } else { 
+        if(computerScore >= 5) {
+            gameOver = document.getElementById('gameOver').innerHTML = "Prehral si celu hru. Bot dosiahol " + computerScore + " bodov."
         setTimeout(() => {
             playAgain()
         }, 1500)
+        }
     }
 }
 
@@ -182,14 +169,14 @@ function fullGameWin() {
 
 function playAgain() {
     let playAgainPrompt = prompt("Chceš hrať odznova ?")
-    if (playAgainPrompt.toLowerCase() == "ano") {
+    if (wordAdjustment(playAgainPrompt) == "ano") {
 
         playerScore = 0
         computerScore = 0
 
-        count.kamen = 0
-        count.papier = 0
-        count.noznice = 0
+        count.k = 0
+        count.p = 0
+        count.n = 0
 
         onBoardingDone = 0
 
@@ -197,9 +184,12 @@ function playAgain() {
 
         document.getElementById('computer-score-board').innerHTML = 0
 
-        historyArray = []
-        document.getElementById('history').innerHTML = ""
+        historyArrayOfWins = []
+        document.getElementById('history').innerHTML = null
 
-        document.getElementById('gameOver').innerHTML = ""
+        document.getElementById('gameOver').innerHTML = null
+
+        historyArrayOfChooses = []
+        historyOfChooses.innerHTML = null
     }
 }
